@@ -13,4 +13,3 @@ make the arduino store two times: total time spent outside and time spent travel
 add the possibility to change modes with the mode button
 add the option to adjust wheel diamter in inches (which will be converted to metres)
 write an equivalent printer function for LCD
-
