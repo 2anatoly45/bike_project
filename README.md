@@ -5,11 +5,11 @@ Bike_project
 
 TO DO:
 
-write a printer function
-convert time to hours, minutes and seconds
-write algorithm for velocity
-add the option to pause when taking a break to leave average speed unaffected
-make the arduino store two times: total time spent outside and time spent travelling
-add the possibility to change modes with the mode button
-add the option to adjust wheel diamter in inches (which will be converted to metres)
-write an equivalent printer function for LCD
+1. Write a printer function;
+2. Convert time to hours, minutes and seconds;
+3. Write algorithm for velocity;
+4. Add the option to pause when taking a break to leave average speed unaffected;
+5. Make the arduino store two times: total time spent outside and time spent travelling;
+6. Add the possibility to change modes with the mode button;
+7. Add the option to adjust wheel diamter in inches (which will be converted to metres);
+8. Write an equivalent printer function for LCD;
