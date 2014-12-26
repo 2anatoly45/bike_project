@@ -1,4 +1,4 @@
-Bike_project
+bike_project
 ============
 
 // Add here what you think is important
