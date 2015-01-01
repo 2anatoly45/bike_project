@@ -1,9 +1,11 @@
 #define MODE 10           // Button pin numbers
 #define PAUSE 8
 #define MAGNET 7          // Magnet simluated with a button
-#define INTERVAL 2000     // Interval for velocity
+#define INTERVAL 2000     // Time interval, in milliseconds, which will be used to determine instantaneous velocity
 #define DIAMETER 27       // Diamter of the wheel in inches
 #define MAGNETS 2         // Number of magnets on the wheel (affects accuracy of measurement)
+#define IN_TO_M 0.0254    // Conversion rate from inches to meters (1 inch = 0.0254 meters)
+#define PI 3.141593
 
 boolean modeState = 0;    // 3 buttons + simulated magnet sensor
 boolean modePrev = 0;
@@ -18,7 +20,7 @@ int riding_time = 0;      // Time of trip in milliseconds
 int seconds = 0;
 int minutes = 0;
 int hours = 0;
-double arc = DIAMETER / MAGNETS;
+double arc = ((DIAMETER * PI) * IN_TO_M) / MAGNETS ; // Arc length between magnets in meters
 double distance = 0;         // Distance travelled
 double span = 0;             // Time interval between consecutive velocity calculations
 double velocity = 0;         // Instantaneous speed
@@ -35,6 +37,14 @@ void setup() {
   pinMode(MAGNET, INPUT);
 }
 
+void convert_time(int mil) { // -----Still need a way to adjust the session time-----
+  double sec = mil / 1000; // Convert into seconds first so that the rest of the calculations are easier to read
+  
+  seconds = sec % 60;
+  minutes = sec % 3600 / 60;
+  hours = sec / 3600;
+}
+
 void loop() { 
   //  Serial.print("millis: "); Serial.println(millis()); // For verifying execution time
 
@@ -45,11 +55,11 @@ void loop() {
   convert_time(millis());       // Convert time into hours, minutes and seconds
   convert_time(riding_time);
 
-  distance = mag * ((arc * 0.0254) * 3.141593) / 1000;    // [km]
+  distance = mag * arc / 1000;    // [km]
   av_speed = distance * 3600 / ((millis() - moment) / 1000);   // [km/h]
 
   if (INTERVAL <= ((millis() - moment) - span)) {
-    velocity = (contacts * (arc * 0.0254) * 3.141593) / INTERVAL * 3600;
+    velocity = (contacts * arc) / INTERVAL * 3600;
     contacts = 0;
     span = millis() - moment;
   }
@@ -71,7 +81,7 @@ void loop() {
   if (modeState == LOW)
     modePrev = 0;
 
-  // Increment ONLY at start of magnet has begun to be sensed
+  // Increment ONLY when the magnet has begun to be sensed
   if (magnetState == HIGH && magnetPrev == 0) {
     magnetPrev = 1;
     ++mag;
@@ -83,7 +93,6 @@ void loop() {
     magnetPrev = 0;
 
   if (pauseState == HIGH && pausePrev == 0) { // Press the pause button
-
     moment = millis();
   } 
 
