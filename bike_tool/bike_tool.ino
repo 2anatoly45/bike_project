@@ -27,7 +27,7 @@ int riding_minutes = 0;
 int riding_hours = 0;
 int rest_start = 0;          // Beginning of break
 int rest_end = 0;            // End of break
-int rest = 0;                // Duration of break (rest)
+int rest = 0;                // Total duration of break (rest)
 double arc = ((DIAMETER * PI) * IN_TO_M) / MAGNETS; // Arc length between magnets [m]
 double distance = 0;         // Distance travelled
 double span = 0;             // Time interval between consecutive velocity calculations
@@ -36,6 +36,7 @@ double av_speed = 0;         // Average speed during trip
 double max_speed = 0;        // Max speed attained during trip
 
 int counter = 0;             // Used for switching between modes
+boolean resting = 0;         // Used to determine if taking a break
 
 LiquidCrystal lcd(2, 3, 13, 12, 11, 10);
 
@@ -55,19 +56,6 @@ void loop() {
   modeState = digitalRead(MODE);
   pauseState = digitalRead(PAUSE);
   magnetState = digitalRead(SENSOR);
-
-  riding_time = millis() - rest;                       // [ms]
-  distance = mag * arc / 1000;                         // [km]
-  av_speed = distance * 3600 / (riding_time / 1000);   // [km/h]
-
-  if (INTERVAL <= (riding_time - span)) {
-    velocity = (contacts * arc) * 3600 / INTERVAL;
-    contacts = 0;
-    span = riding_time;
-  }
-
-  if (max_speed < velocity) 
-    max_speed = velocity;
 
   if (modeState == HIGH && modePrev == 0) {
     modePrev = 1;
@@ -94,9 +82,34 @@ void loop() {
   }
 
   if (pauseState == HIGH && pausePrev == 0) {     // Press pause button
+    resting = !resting;
+    pausePrev = 1;
+
+    if (resting)
+      rest_start = millis();
+    else if (!resting)
+      rest_end = millis();
+      
+    rest += (rest_end - rest_start);
   }
-  else if (pauseState == LOW && pausePrev == 1) {
+  else if (pauseState == LOW)
+    pausePrev = 0;
+    
+ // if (resting)
+      
+    
+  riding_time = millis() - rest;                       // [ms]  
+  distance = mag * arc / 1000;                         // [km]
+  av_speed = distance * 3600 / (riding_time / 1000);   // [km/h]
+
+  if (INTERVAL <= (riding_time - span)) {
+    velocity = (contacts * arc) * 3600 / INTERVAL;
+    contacts = 0;
+    span = riding_time;
   }
+
+  if (max_speed < velocity) 
+    max_speed = velocity;
 
   riding_seconds = (riding_time / 1000) % 60;
   riding_minutes = (riding_time / 1000) % 3600 / 60;
@@ -109,6 +122,7 @@ void loop() {
   printer();
   lcd_printer();
 }
+
 /* -- Is buggy for some reason
 void convert_time(int mil, int &seconds, int &minutes, int &hours) {
   seconds = (mil / 1000) % 60;
@@ -116,7 +130,8 @@ void convert_time(int mil, int &seconds, int &minutes, int &hours) {
   hours = (mil / 1000) / 3600;
 }
 */
-void printer() {       Serial.print(mag); Serial.print("   ");       // Note: printer is limited to a 16x2 display  
+
+void printer() {     //  Serial.print(mag); Serial.print("   ");       // Note: printer is limited to a 16x2 display  
   if (counter == 0) {
     Serial.print("S ");                     // 2
     if (velocity < 10) Serial.print('0');    
@@ -180,6 +195,10 @@ void lcd_printer() {             // Note: printer is limited to a 16x2 display
     if (distance < 10) lcd.print('0');    
     lcd.print(distance, 1);              // 4
     lcd.print(" km");                    // 3   Total = 9
+    
+    //if (resting) lcd.print("  ON");
+    //else lcd.print("  OFF");
+    
   }
   else if (counter == 1) {
     lcd.setCursor(0, 0);
