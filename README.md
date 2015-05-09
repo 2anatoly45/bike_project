@@ -1,4 +1,4 @@
-bike_project
+bike_speedometer
 ============
 
 TO DO:
@@ -11,6 +11,5 @@ TO DO:
 
 
 //
-To follow up with the previous concern, code execution is quick enough 
-for all magnet contacts to be perceived by the sensors. You would have to go at
+Code execution is quick enough for all magnet contacts to be perceived by the sensors. You would have to go at
 193.5km/h for that to be a problem.
