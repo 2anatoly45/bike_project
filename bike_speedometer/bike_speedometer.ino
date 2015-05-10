@@ -60,12 +60,10 @@ void loop() {
   if (modeState == HIGH && modePrev == 0) {
     modePrev = 1;
 
-    if (counter == 0)
-      counter = 1;
-    else if (counter == 1)
-      counter = 2;
-    else if (counter == 2)
+    if (counter == 2)
       counter = 0;
+    else
+      ++counter;
   }
   else if (modeState == LOW)
     modePrev = 0;
