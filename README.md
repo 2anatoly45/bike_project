@@ -12,5 +12,4 @@ Hypothesis: the velocity displayed will have a maximum value which is inversely 
 Based on this hypothesis, the accuracy of the spedometer may be limited to a threshold velocity.
 
 //
-Code execution is quick enough for all magnet contacts to be perceived by the sensors. You would have to go at
-193.5km/h for that to be a problem.
+Code execution is quick enough for all magnet contacts to be perceived by the sensors. You would have to go at 193.5km/h for that to be a problem.
