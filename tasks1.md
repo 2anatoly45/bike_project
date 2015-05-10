@@ -1,4 +1,4 @@
-bike_project
+speedometer
 ============
 
 //Random calculation stuff. This probably ties in with DEBOUNCE
